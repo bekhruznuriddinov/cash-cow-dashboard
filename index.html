@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cash Cow Agent — Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0b0f1a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  header {
+    max-width: 1100px;
+    margin: 0 auto 32px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+  header h1 span { color: #4ade80; }
+  .updated { font-size: 0.78rem; color: #64748b; }
+
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    gap: 16px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .card {
+    background: #131929;
+    border: 1px solid #1e2d45;
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .stat-value.green  { color: #4ade80; }
+  .stat-value.red    { color: #f87171; }
+  .stat-value.neutral{ color: #e2e8f0; }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 760px) {
+    .charts { grid-template-columns: 2fr 1fr; }
+  }
+
+  .chart-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    margin-bottom: 16px;
+  }
+
+  canvas { display: block; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #475569;
+    padding: 0 8px 10px;
+    border-bottom: 1px solid #1e2d45;
+  }
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #0f1928;
+    color: #cbd5e1;
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.right, th.right { text-align: right; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .badge.profit { background: #14532d; color: #4ade80; }
+  .badge.stop   { background: #4c0519; color: #f87171; }
+  .badge.expire { background: #1e3a5f; color: #60a5fa; }
+  .badge.manual { background: #3b2a00; color: #fbbf24; }
+  .badge.skip   { background: #1e293b; color: #64748b; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cash Cow <span>Agent</span></h1>
+  <div class="updated" id="updated">Loading…</div>
+</header>
+
+<div class="grid stats" id="stats"></div>
+
+<div class="grid charts" style="margin-top:16px;">
+  <div class="card">
+    <div class="chart-title">Cumulative P&amp;L</div>
+    <canvas id="cumulChart" height="220"></canvas>
+  </div>
+  <div class="card">
+    <div class="chart-title">Trade Outcomes</div>
+    <canvas id="pieChart" height="220"></canvas>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:16px; grid-template-columns:1fr;">
+  <div class="card">
+    <div class="chart-title">Daily P&amp;L</div>
+    <canvas id="dailyChart" height="160"></canvas>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:16px; grid-template-columns:1fr;">
+  <div class="card">
+    <div class="chart-title">Trade History</div>
+    <div style="overflow-x:auto;">
+      <table id="tradeTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Result</th>
+            <th>Dir</th>
+            <th class="right">Short</th>
+            <th class="right">Long</th>
+            <th class="right">Credit</th>
+            <th class="right">Qty</th>
+            <th class="right">P&amp;L</th>
+            <th class="right">Hold</th>
+            <th class="right">VIX</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const CHART_DEFAULTS = {
+  color: '#94a3b8',
+  borderColor: '#1e2d45',
+};
+Chart.defaults.color = CHART_DEFAULTS.color;
+Chart.defaults.borderColor = CHART_DEFAULTS.borderColor;
+
+function badgeClass(result) {
+  const map = { PROFIT:'profit', STOP:'stop', EXPIRE:'expire', EXPIRE_ITM:'stop', MANUAL_CLOSE:'manual', SKIP:'skip' };
+  return map[result] || 'skip';
+}
+
+function fmt(n, prefix='$') {
+  if (n === 0) return `${prefix}0.00`;
+  const sign = n > 0 ? '+' : '';
+  return `${sign}${prefix}${Math.abs(n).toFixed(2)}`;
+}
+
+function holdStr(min) {
+  if (!min) return '—';
+  if (min < 60) return `${min.toFixed(0)}m`;
+  return `${(min/60).toFixed(1)}h`;
+}
+
+async function init() {
+  const res = await fetch('data.json?_=' + Date.now());
+  const data = await res.json();
+  const { trades, summary } = data;
+
+  document.getElementById('updated').textContent = 'Updated ' + data.generated;
+
+  // ── Stats cards ─────────────────────────────────────────────────
+  const pnlColor = summary.total_pnl >= 0 ? 'green' : 'red';
+  document.getElementById('stats').innerHTML = `
+    <div class="card">
+      <div class="stat-label">Total P&L</div>
+      <div class="stat-value ${pnlColor}">${fmt(summary.total_pnl)}</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Win Rate</div>
+      <div class="stat-value neutral">${summary.win_rate}%</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Trades</div>
+      <div class="stat-value neutral">${summary.total_trades}</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Avg Hold</div>
+      <div class="stat-value neutral">${holdStr(summary.avg_hold_min)}</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Buying Power</div>
+      <div class="stat-value neutral">$${summary.current_bp.toFixed(0)}</div>
+    </div>
+  `;
+
+  // ── Cumulative P&L chart ─────────────────────────────────────────
+  const entered = trades.filter(t => t.result !== 'SKIP');
+  let cumul = 0;
+  const cumulLabels = [], cumulData = [];
+  for (const t of entered) {
+    cumul += t.pnl;
+    cumulLabels.push(t.date ? t.date.slice(5) : '');
+    cumulData.push(+cumul.toFixed(2));
+  }
+
+  new Chart(document.getElementById('cumulChart'), {
+    type: 'line',
+    data: {
+      labels: cumulLabels,
+      datasets: [{
+        data: cumulData,
+        borderColor: '#4ade80',
+        backgroundColor: 'rgba(74,222,128,0.08)',
+        pointBackgroundColor: cumulData.map(v => v >= 0 ? '#4ade80' : '#f87171'),
+        pointRadius: 4,
+        fill: true,
+        tension: 0.3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e2d45' } },
+        y: {
+          grid: { color: '#1e2d45' },
+          ticks: { callback: v => '$' + v },
+        }
+      }
+    }
+  });
+
+  // ── Outcomes donut ───────────────────────────────────────────────
+  const counts = { PROFIT:0, EXPIRE:0, MANUAL_CLOSE:0, STOP:0, EXPIRE_ITM:0, SKIP:0 };
+  for (const t of trades) counts[t.result] = (counts[t.result]||0) + 1;
+
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Profit', 'Expire', 'Manual', 'Stop/ITM', 'Skip'],
+      datasets: [{
+        data: [
+          counts.PROFIT,
+          counts.EXPIRE,
+          counts.MANUAL_CLOSE,
+          counts.STOP + counts.EXPIRE_ITM,
+          counts.SKIP,
+        ],
+        backgroundColor: ['#4ade80','#60a5fa','#fbbf24','#f87171','#334155'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } }
+      },
+      cutout: '65%',
+    }
+  });
+
+  // ── Daily P&L bar chart ──────────────────────────────────────────
+  const dailyLabels = entered.map(t => t.date ? t.date.slice(5) : '');
+  const dailyData   = entered.map(t => +t.pnl.toFixed(2));
+  const barColors   = dailyData.map(v => v >= 0 ? '#4ade80' : '#f87171');
+
+  new Chart(document.getElementById('dailyChart'), {
+    type: 'bar',
+    data: {
+      labels: dailyLabels,
+      datasets: [{ data: dailyData, backgroundColor: barColors, borderRadius: 4 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          grid: { color: '#1e2d45' },
+          ticks: { callback: v => '$' + v },
+        }
+      }
+    }
+  });
+
+  // ── Trade table ──────────────────────────────────────────────────
+  const tbody = document.getElementById('tableBody');
+  const sorted = [...trades].reverse();
+  tbody.innerHTML = sorted.map(t => {
+    const pnlStr = t.result === 'SKIP' ? '—' : fmt(t.pnl);
+    const pnlColor = t.pnl > 0 ? 'color:#4ade80' : t.pnl < 0 ? 'color:#f87171' : '';
+    return `<tr>
+      <td>${t.date || '—'}</td>
+      <td><span class="badge ${badgeClass(t.result)}">${t.result}</span></td>
+      <td>${t.direction ? t.direction.toUpperCase() : '—'}</td>
+      <td class="right">${t.short_strike || '—'}</td>
+      <td class="right">${t.long_strike  || '—'}</td>
+      <td class="right">${t.credit ? '$'+t.credit.toFixed(2) : '—'}</td>
+      <td class="right">${t.contracts || '—'}</td>
+      <td class="right" style="${pnlColor}">${pnlStr}</td>
+      <td class="right">${holdStr(t.hold_min)}</td>
+      <td class="right">${t.vix ? t.vix.toFixed(1) : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+init().catch(err => {
+  document.body.innerHTML += `<p style="color:#f87171;text-align:center;margin-top:40px">Failed to load data.json: ${err}</p>`;
+});
+</script>
+</body>
+</html>
