@@ -58,6 +58,7 @@ def parse_fields(fields_str):
 
 def parse_logs():
     records = []
+    vix_by_date = {}
     files = sorted(glob.glob(LOG_PATTERN))
 
     for filepath in files:
@@ -77,6 +78,13 @@ def parse_logs():
             m = re.match(r'[══]+\s+(\d{4}-\d{2}-\d{2})\s+[══]+', line)
             if m:
                 current_date = m.group(1)
+                continue
+
+            # PREMARKET line — extract VIX for this date
+            if line.startswith("PREMARKET") and current_date:
+                m = re.search(r'vix=([\d.]+)', line)
+                if m:
+                    vix_by_date[current_date] = _float(m.group(1))
                 continue
 
             # New format: TRADE N | RESULT | time=HH:MM:SS | Trading Mode: MODE | ...
@@ -103,6 +111,11 @@ def parse_logs():
                     fields = parse_fields(rest)
                     fields.update({"date": date, "time": None, "result": result})
                     records.append(fields)
+
+    # Stamp per-date VIX onto each trade record
+    for r in records:
+        if r.get("vix", 0.0) == 0.0 and r.get("date") in vix_by_date:
+            r["vix"] = vix_by_date[r["date"]]
 
     return records
 
