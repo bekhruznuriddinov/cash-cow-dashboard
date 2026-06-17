@@ -158,18 +158,18 @@
 <div class="grid charts" style="margin-top:16px;">
   <div class="card">
     <div class="chart-title">Cumulative Return %</div>
-    <div style="position:relative;height:220px;"><canvas id="cumulChart"></canvas></div>
+    <canvas id="cumulChart" style="width:100%;height:220px;display:block;"></canvas>
   </div>
   <div class="card">
     <div class="chart-title">Trade Outcomes</div>
-    <div style="position:relative;height:220px;"><canvas id="pieChart"></canvas></div>
+    <canvas id="pieChart" style="width:100%;height:220px;display:block;"></canvas>
   </div>
 </div>
 
 <div class="grid" style="margin-top:16px; grid-template-columns:1fr;">
   <div class="card">
     <div class="chart-title">Return % Per Trade</div>
-    <div style="position:relative;height:160px;"><canvas id="dailyChart"></canvas></div>
+    <canvas id="dailyChart" style="width:100%;height:160px;display:block;"></canvas>
   </div>
 </div>
 
@@ -311,7 +311,7 @@ async function init() {
       ]
     },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } },
@@ -344,7 +344,7 @@ async function init() {
       }]
     },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       plugins: { legend: { position:'bottom', labels:{ padding:16, boxWidth:12 } } },
       cutout: '65%',
@@ -364,7 +364,7 @@ async function init() {
       }]
     },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
