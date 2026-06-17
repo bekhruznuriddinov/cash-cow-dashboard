@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-16 21:11",
+  "generated": "2026-06-17 16:37",
   "trades": [
     {
       "short_strike": 723.0,
@@ -90,17 +90,32 @@
       "date": "2026-06-16",
       "time": "11:54:26",
       "result": "MANUAL_CLOSE"
+    },
+    {
+      "short_strike": 742.0,
+      "long_strike": 741.0,
+      "delta": 0.11,
+      "credit": 0.08,
+      "contracts": 3,
+      "pnl": 6.0,
+      "buying_power": 1293.89,
+      "hold_min": 8.9,
+      "direction": "put",
+      "vix": 0.0,
+      "date": "2026-06-17",
+      "time": "09:32:59",
+      "result": "MANUAL_CLOSE"
     }
   ],
   "summary": {
-    "total_pnl": 38.0,
-    "win_rate": 83.3,
-    "total_trades": 6,
-    "wins": 5,
+    "total_pnl": 44.0,
+    "win_rate": 85.7,
+    "total_trades": 7,
+    "wins": 6,
     "losses": 0,
     "skips": 0,
-    "avg_hold_min": 175.4,
-    "current_bp": 1288.41,
+    "avg_hold_min": 151.6,
+    "current_bp": 1293.89,
     "starting_balance": 1225.0
   }
 }
