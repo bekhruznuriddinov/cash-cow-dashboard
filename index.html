@@ -188,7 +188,6 @@
             <th class="right">Return %</th>
             <th class="right">P&amp;L</th>
             <th class="right">Hold</th>
-            <th class="right">VIX</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -392,7 +391,6 @@ async function init() {
       <td class="right" style="${retColor}">${t.result!=='SKIP' ? fmtPct(ret) : '—'}</td>
       <td class="right"><span class="sens" style="color:${pnlColor2}">${t.result!=='SKIP' ? fmtDollar(t.pnl) : '—'}</span></td>
       <td class="right">${holdStr(t.hold_min)}</td>
-      <td class="right">${t.vix ? t.vix.toFixed(1) : '—'}</td>
     </tr>`;
   }).join('');
 }
