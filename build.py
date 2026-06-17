@@ -36,11 +36,18 @@ def parse_fields(fields_str):
     pnl_raw = get(r'pnl=[+]?\$([-+]?[\d.]+)')
     credit_raw = get(r'credit=\$?([-+]?[\d.]+)')
 
+    # If credit is negative the position was adopted mid-session and Robinhood's
+    # avg_price was misread — approximate with minimum entry credit.
+    FALLBACK_CREDIT = 0.04
+    credit = _float(credit_raw)
+    if credit <= 0:
+        credit = FALLBACK_CREDIT
+
     return {
         "short_strike": _float(get(r'short=([\d.]+)')),
         "long_strike":  _float(get(r'long=([\d.]+)')),
         "delta":        _float(get(r'delta=([\d.]+)')),
-        "credit":       _float(credit_raw),
+        "credit":       credit,
         "contracts":    _int(get(r'contracts=(\d+)')),
         "pnl":          _float(pnl_raw),
         "buying_power": _float(get(r'eod_bp=\$([\d.]+)')),
@@ -135,14 +142,15 @@ def summarise(records):
         "generated":    datetime.now().strftime("%Y-%m-%d %H:%M"),
         "trades":       trades,
         "summary": {
-            "total_pnl":      round(total_pnl, 2),
-            "win_rate":       round(win_rate, 1),
-            "total_trades":   len(entered),
-            "wins":           len(wins),
-            "losses":         len(losses),
-            "skips":          len(trades) - len(entered),
-            "avg_hold_min":   round(avg_hold, 1),
-            "current_bp":     current_bp,
+            "total_pnl":        round(total_pnl, 2),
+            "win_rate":         round(win_rate, 1),
+            "total_trades":     len(entered),
+            "wins":             len(wins),
+            "losses":           len(losses),
+            "skips":            len(trades) - len(entered),
+            "avg_hold_min":     round(avg_hold, 1),
+            "current_bp":       current_bp,
+            "starting_balance": 1225.0,
         },
     }
 

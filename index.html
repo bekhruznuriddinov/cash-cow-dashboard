@@ -20,14 +20,42 @@
     max-width: 1100px;
     margin: 0 auto 32px;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
   }
   header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
   header h1 span { color: #4ade80; }
+
+  .header-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .updated { font-size: 0.78rem; color: #64748b; }
+
+  .toggle-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid #1e2d45;
+    background: #131929;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .toggle-btn:hover { color: #e2e8f0; border-color: #334155; }
+  .toggle-btn.revealed { color: #fbbf24; border-color: #92400e; }
+
+  /* Sensitive values: blurred by default, revealed on toggle */
+  .sens {
+    display: inline-block;
+    filter: blur(6px);
+    transition: filter 0.2s;
+    border-radius: 4px;
+  }
+  body.revealed .sens { filter: none; }
 
   .grid {
     max-width: 1100px;
@@ -36,9 +64,7 @@
     gap: 16px;
   }
 
-  .stats {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  }
+  .stats { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 
   .card {
     background: #131929;
@@ -60,19 +86,20 @@
     letter-spacing: -0.03em;
     line-height: 1;
   }
-  .stat-value.green  { color: #4ade80; }
-  .stat-value.red    { color: #f87171; }
-  .stat-value.neutral{ color: #e2e8f0; }
+  .stat-sub {
+    font-size: 0.78rem;
+    color: #475569;
+    margin-top: 6px;
+  }
+  .green  { color: #4ade80; }
+  .red    { color: #f87171; }
+  .neutral{ color: #e2e8f0; }
 
-  .charts {
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 760px) {
-    .charts { grid-template-columns: 2fr 1fr; }
-  }
+  .charts { grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .charts { grid-template-columns: 2fr 1fr; } }
 
   .chart-title {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #64748b;
@@ -81,11 +108,7 @@
 
   canvas { display: block; }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.82rem;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
   th {
     text-align: left;
     font-size: 0.68rem;
@@ -113,25 +136,28 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
-  .badge.profit { background: #14532d; color: #4ade80; }
-  .badge.stop   { background: #4c0519; color: #f87171; }
-  .badge.expire { background: #1e3a5f; color: #60a5fa; }
-  .badge.manual { background: #3b2a00; color: #fbbf24; }
-  .badge.skip   { background: #1e293b; color: #64748b; }
+  .badge.profit { background:#14532d; color:#4ade80; }
+  .badge.stop   { background:#4c0519; color:#f87171; }
+  .badge.expire { background:#1e3a5f; color:#60a5fa; }
+  .badge.manual { background:#3b2a00; color:#fbbf24; }
+  .badge.skip   { background:#1e293b; color:#64748b; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Cash Cow <span>Agent</span></h1>
-  <div class="updated" id="updated">Loading…</div>
+  <div class="header-right">
+    <div class="updated" id="updated">Loading…</div>
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleReveal()">Show $</button>
+  </div>
 </header>
 
 <div class="grid stats" id="stats"></div>
 
 <div class="grid charts" style="margin-top:16px;">
   <div class="card">
-    <div class="chart-title">Cumulative P&amp;L</div>
+    <div class="chart-title">Cumulative Return %</div>
     <canvas id="cumulChart" height="220"></canvas>
   </div>
   <div class="card">
@@ -142,7 +168,7 @@
 
 <div class="grid" style="margin-top:16px; grid-template-columns:1fr;">
   <div class="card">
-    <div class="chart-title">Daily P&amp;L</div>
+    <div class="chart-title">Return % Per Trade</div>
     <canvas id="dailyChart" height="160"></canvas>
   </div>
 </div>
@@ -159,8 +185,7 @@
             <th>Dir</th>
             <th class="right">Short</th>
             <th class="right">Long</th>
-            <th class="right">Credit</th>
-            <th class="right">Qty</th>
+            <th class="right">Return %</th>
             <th class="right">P&amp;L</th>
             <th class="right">Hold</th>
             <th class="right">VIX</th>
@@ -173,43 +198,60 @@
 </div>
 
 <script>
-const CHART_DEFAULTS = {
-  color: '#94a3b8',
-  borderColor: '#1e2d45',
-};
-Chart.defaults.color = CHART_DEFAULTS.color;
-Chart.defaults.borderColor = CHART_DEFAULTS.borderColor;
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = '#1e2d45';
 
-function badgeClass(result) {
-  const map = { PROFIT:'profit', STOP:'stop', EXPIRE:'expire', EXPIRE_ITM:'stop', MANUAL_CLOSE:'manual', SKIP:'skip' };
-  return map[result] || 'skip';
+function toggleReveal() {
+  const revealed = document.body.classList.toggle('revealed');
+  const btn = document.getElementById('toggleBtn');
+  btn.textContent = revealed ? 'Hide $' : 'Show $';
+  btn.classList.toggle('revealed', revealed);
 }
 
-function fmt(n, prefix='$') {
-  if (n === 0) return `${prefix}0.00`;
-  const sign = n > 0 ? '+' : '';
-  return `${sign}${prefix}${Math.abs(n).toFixed(2)}`;
+function badgeClass(r) {
+  return {PROFIT:'profit',STOP:'stop',EXPIRE:'expire',EXPIRE_ITM:'stop',MANUAL_CLOSE:'manual',SKIP:'skip'}[r]||'skip';
 }
 
-function holdStr(min) {
-  if (!min) return '—';
-  if (min < 60) return `${min.toFixed(0)}m`;
-  return `${(min/60).toFixed(1)}h`;
+function calcReturn(t) {
+  if (t.result === 'SKIP' || !t.contracts) return 0;
+  const w = Math.abs(t.short_strike - t.long_strike) || 1.0;
+  const collateral = (w - Math.max(t.credit, 0)) * t.contracts * 100;
+  return collateral > 0 ? (t.pnl / collateral) * 100 : 0;
+}
+
+function fmtPct(n) {
+  if (n === 0) return '0.0%';
+  return (n > 0 ? '+' : '') + n.toFixed(1) + '%';
+}
+
+function fmtDollar(n) {
+  if (n === 0) return '$0.00';
+  return (n > 0 ? '+' : '-') + '$' + Math.abs(n).toFixed(2);
+}
+
+function holdStr(m) {
+  if (!m) return '—';
+  return m < 60 ? m.toFixed(0)+'m' : (m/60).toFixed(1)+'h';
 }
 
 async function init() {
-  const res = await fetch('data.json?_=' + Date.now());
+  const res  = await fetch('data.json?_=' + Date.now());
   const data = await res.json();
   const { trades, summary } = data;
 
   document.getElementById('updated').textContent = 'Updated ' + data.generated;
 
-  // ── Stats cards ─────────────────────────────────────────────────
+  const entered = trades.filter(t => t.result !== 'SKIP');
+  const totalPct = entered.reduce((s, t) => s + calcReturn(t), 0);
+  const pctColor = totalPct >= 0 ? 'green' : 'red';
   const pnlColor = summary.total_pnl >= 0 ? 'green' : 'red';
+
+  // ── Stats cards (no buying power) ───────────────────────────────
   document.getElementById('stats').innerHTML = `
     <div class="card">
-      <div class="stat-label">Total P&L</div>
-      <div class="stat-value ${pnlColor}">${fmt(summary.total_pnl)}</div>
+      <div class="stat-label">Total Return</div>
+      <div class="stat-value ${pctColor}">${fmtPct(totalPct)}</div>
+      <div class="stat-sub">(<span class="sens" style="color:${summary.total_pnl>=0?'#4ade80':'#f87171'}">${fmtDollar(summary.total_pnl)}</span>)</div>
     </div>
     <div class="card">
       <div class="stat-label">Win Rate</div>
@@ -223,65 +265,79 @@ async function init() {
       <div class="stat-label">Avg Hold</div>
       <div class="stat-value neutral">${holdStr(summary.avg_hold_min)}</div>
     </div>
-    <div class="card">
-      <div class="stat-label">Buying Power</div>
-      <div class="stat-value neutral">$${summary.current_bp.toFixed(0)}</div>
-    </div>
   `;
 
-  // ── Cumulative P&L chart ─────────────────────────────────────────
-  const entered = trades.filter(t => t.result !== 'SKIP');
-  let cumul = 0;
-  const cumulLabels = [], cumulData = [];
+  // ── Cumulative chart — two lines ────────────────────────────────
+  // Line 1: sum of per-trade collateral returns (capital efficiency)
+  // Line 2: account % return based on starting balance (compounding)
+  const startBal = summary.starting_balance || 1225;
+  let collatCumul = 0, runningBal = startBal;
+  const cumulLabels = [], collatData = [], accountData = [];
+
   for (const t of entered) {
-    cumul += t.pnl;
+    collatCumul += calcReturn(t);
+    runningBal  += t.pnl;
     cumulLabels.push(t.date ? t.date.slice(5) : '');
-    cumulData.push(+cumul.toFixed(2));
+    collatData.push(+collatCumul.toFixed(2));
+    accountData.push(+((runningBal - startBal) / startBal * 100).toFixed(2));
   }
 
   new Chart(document.getElementById('cumulChart'), {
     type: 'line',
     data: {
       labels: cumulLabels,
-      datasets: [{
-        data: cumulData,
-        borderColor: '#4ade80',
-        backgroundColor: 'rgba(74,222,128,0.08)',
-        pointBackgroundColor: cumulData.map(v => v >= 0 ? '#4ade80' : '#f87171'),
-        pointRadius: 4,
-        fill: true,
-        tension: 0.3,
-      }]
+      datasets: [
+        {
+          label: 'Collateral return',
+          data: collatData,
+          borderColor: '#4ade80',
+          backgroundColor: 'rgba(74,222,128,0.06)',
+          pointBackgroundColor: '#4ade80',
+          pointRadius: 3,
+          fill: true,
+          tension: 0.3,
+        },
+        {
+          label: 'Account return',
+          data: accountData,
+          borderColor: '#60a5fa',
+          backgroundColor: 'rgba(96,165,250,0.04)',
+          pointBackgroundColor: '#60a5fa',
+          pointRadius: 3,
+          fill: false,
+          tension: 0.3,
+          borderDash: [4, 3],
+        },
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } },
+      },
       scales: {
         x: { grid: { color: '#1e2d45' } },
         y: {
           grid: { color: '#1e2d45' },
-          ticks: { callback: v => '$' + v },
+          ticks: { callback: v => v.toFixed(1) + '%' },
         }
       }
     }
   });
 
   // ── Outcomes donut ───────────────────────────────────────────────
-  const counts = { PROFIT:0, EXPIRE:0, MANUAL_CLOSE:0, STOP:0, EXPIRE_ITM:0, SKIP:0 };
+  const counts = {};
   for (const t of trades) counts[t.result] = (counts[t.result]||0) + 1;
 
   new Chart(document.getElementById('pieChart'), {
     type: 'doughnut',
     data: {
-      labels: ['Profit', 'Expire', 'Manual', 'Stop/ITM', 'Skip'],
+      labels: ['Profit','Expire','Manual','Stop/ITM','Skip'],
       datasets: [{
         data: [
-          counts.PROFIT,
-          counts.EXPIRE,
-          counts.MANUAL_CLOSE,
-          counts.STOP + counts.EXPIRE_ITM,
-          counts.SKIP,
+          counts.PROFIT||0, counts.EXPIRE||0, counts.MANUAL_CLOSE||0,
+          (counts.STOP||0)+(counts.EXPIRE_ITM||0), counts.SKIP||0,
         ],
         backgroundColor: ['#4ade80','#60a5fa','#fbbf24','#f87171','#334155'],
         borderWidth: 0,
@@ -290,23 +346,22 @@ async function init() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } }
-      },
+      plugins: { legend: { position:'bottom', labels:{ padding:16, boxWidth:12 } } },
       cutout: '65%',
     }
   });
 
-  // ── Daily P&L bar chart ──────────────────────────────────────────
-  const dailyLabels = entered.map(t => t.date ? t.date.slice(5) : '');
-  const dailyData   = entered.map(t => +t.pnl.toFixed(2));
-  const barColors   = dailyData.map(v => v >= 0 ? '#4ade80' : '#f87171');
-
+  // ── Per-trade % return bars ──────────────────────────────────────
+  const dailyData = entered.map(t => +calcReturn(t).toFixed(2));
   new Chart(document.getElementById('dailyChart'), {
     type: 'bar',
     data: {
-      labels: dailyLabels,
-      datasets: [{ data: dailyData, backgroundColor: barColors, borderRadius: 4 }]
+      labels: entered.map(t => t.date ? t.date.slice(5) : ''),
+      datasets: [{
+        data: dailyData,
+        backgroundColor: dailyData.map(v => v >= 0 ? '#4ade80' : '#f87171'),
+        borderRadius: 4,
+      }]
     },
     options: {
       responsive: true,
@@ -316,27 +371,26 @@ async function init() {
         x: { grid: { display: false } },
         y: {
           grid: { color: '#1e2d45' },
-          ticks: { callback: v => '$' + v },
+          ticks: { callback: v => v.toFixed(1)+'%' },
         }
       }
     }
   });
 
-  // ── Trade table ──────────────────────────────────────────────────
+  // ── Trade table (no contracts, P&L blurred) ──────────────────────
   const tbody = document.getElementById('tableBody');
-  const sorted = [...trades].reverse();
-  tbody.innerHTML = sorted.map(t => {
-    const pnlStr = t.result === 'SKIP' ? '—' : fmt(t.pnl);
-    const pnlColor = t.pnl > 0 ? 'color:#4ade80' : t.pnl < 0 ? 'color:#f87171' : '';
+  tbody.innerHTML = [...entered].reverse().map(t => {
+    const ret = calcReturn(t);
+    const retColor = ret > 0 ? 'color:#4ade80' : ret < 0 ? 'color:#f87171' : '';
+    const pnlColor2 = t.pnl > 0 ? '#4ade80' : t.pnl < 0 ? '#f87171' : '#94a3b8';
     return `<tr>
-      <td>${t.date || '—'}</td>
+      <td>${t.date||'—'}</td>
       <td><span class="badge ${badgeClass(t.result)}">${t.result}</span></td>
       <td>${t.direction ? t.direction.toUpperCase() : '—'}</td>
-      <td class="right">${t.short_strike || '—'}</td>
-      <td class="right">${t.long_strike  || '—'}</td>
-      <td class="right">${t.credit ? '$'+t.credit.toFixed(2) : '—'}</td>
-      <td class="right">${t.contracts || '—'}</td>
-      <td class="right" style="${pnlColor}">${pnlStr}</td>
+      <td class="right">${t.short_strike||'—'}</td>
+      <td class="right">${t.long_strike||'—'}</td>
+      <td class="right" style="${retColor}">${t.result!=='SKIP' ? fmtPct(ret) : '—'}</td>
+      <td class="right"><span class="sens" style="color:${pnlColor2}">${t.result!=='SKIP' ? fmtDollar(t.pnl) : '—'}</span></td>
       <td class="right">${holdStr(t.hold_min)}</td>
       <td class="right">${t.vix ? t.vix.toFixed(1) : '—'}</td>
     </tr>`;
