@@ -328,16 +328,21 @@ async function init() {
   const counts = {};
   for (const t of trades) counts[t.result] = (counts[t.result]||0) + 1;
 
+  const allSlices = [
+    { label: 'Profit',   count: counts.PROFIT||0,                            color: '#4ade80' },
+    { label: 'Expire',   count: counts.EXPIRE||0,                            color: '#60a5fa' },
+    { label: 'Manual',   count: counts.MANUAL_CLOSE||0,                      color: '#fbbf24' },
+    { label: 'Stop/ITM', count: (counts.STOP||0)+(counts.EXPIRE_ITM||0),     color: '#f87171' },
+    { label: 'Skip',     count: counts.SKIP||0,                              color: '#334155' },
+  ].filter(s => s.count > 0);
+
   new Chart(document.getElementById('pieChart'), {
     type: 'doughnut',
     data: {
-      labels: ['Profit','Expire','Manual','Stop/ITM','Skip'],
+      labels: allSlices.map(s => s.label),
       datasets: [{
-        data: [
-          counts.PROFIT||0, counts.EXPIRE||0, counts.MANUAL_CLOSE||0,
-          (counts.STOP||0)+(counts.EXPIRE_ITM||0), counts.SKIP||0,
-        ],
-        backgroundColor: ['#4ade80','#60a5fa','#fbbf24','#f87171','#334155'],
+        data: allSlices.map(s => s.count),
+        backgroundColor: allSlices.map(s => s.color),
         borderWidth: 0,
       }]
     },
