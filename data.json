@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-17 16:37",
+  "generated": "2026-06-18 12:02",
   "trades": [
     {
       "short_strike": 723.0,
@@ -14,7 +14,7 @@
       "vix": 21.07,
       "date": "2026-06-10",
       "time": "09:30:54",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 716.0,
@@ -29,7 +29,7 @@
       "vix": 21.3,
       "date": "2026-06-11",
       "time": "09:36:17",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 729.0,
@@ -44,7 +44,7 @@
       "vix": 19.43,
       "date": "2026-06-12",
       "time": "09:31:00",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 745.0,
@@ -59,7 +59,7 @@
       "vix": 16.35,
       "date": "2026-06-15",
       "time": "09:32:58",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 758.0,
@@ -89,7 +89,7 @@
       "vix": 15.91,
       "date": "2026-06-16",
       "time": "11:54:26",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 742.0,
@@ -104,18 +104,48 @@
       "vix": 0.0,
       "date": "2026-06-17",
       "time": "09:32:59",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 740.0,
+      "long_strike": 739.0,
+      "delta": 0.117,
+      "credit": 0.07,
+      "contracts": 3,
+      "pnl": 15.0,
+      "buying_power": 1311.37,
+      "hold_min": 186.9,
+      "direction": "put",
+      "vix": 17.13,
+      "date": "2026-06-18",
+      "time": "09:31:03",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 743.0,
+      "long_strike": 742.0,
+      "delta": 0.117,
+      "credit": 0.04,
+      "contracts": 3,
+      "pnl": 3.0,
+      "buying_power": 1322.85,
+      "hold_min": 122.8,
+      "direction": "put",
+      "vix": 17.13,
+      "date": "2026-06-18",
+      "time": "12:46:08",
+      "result": "PROFIT"
     }
   ],
   "summary": {
-    "total_pnl": 44.0,
-    "win_rate": 85.7,
-    "total_trades": 7,
-    "wins": 6,
+    "total_pnl": 62.0,
+    "win_rate": 100.0,
+    "total_trades": 9,
+    "wins": 9,
     "losses": 0,
     "skips": 0,
-    "avg_hold_min": 151.6,
-    "current_bp": 1293.89,
+    "avg_hold_min": 152.3,
+    "current_bp": 1322.85,
     "starting_balance": 1225.0
   }
 }

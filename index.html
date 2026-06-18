@@ -241,15 +241,15 @@ async function init() {
   document.getElementById('updated').textContent = 'Updated ' + data.generated;
 
   const entered = trades.filter(t => t.result !== 'SKIP');
-  const totalPct = entered.reduce((s, t) => s + calcReturn(t), 0);
-  const pctColor = totalPct >= 0 ? 'green' : 'red';
-  const pnlColor = summary.total_pnl >= 0 ? 'green' : 'red';
+  const startBal = summary.starting_balance || 1225;
+  const acctReturn = startBal > 0 ? (summary.total_pnl / startBal) * 100 : 0;
+  const acctColor = acctReturn >= 0 ? 'green' : 'red';
 
   // ── Stats cards (no buying power) ───────────────────────────────
   document.getElementById('stats').innerHTML = `
     <div class="card">
-      <div class="stat-label">Total Return</div>
-      <div class="stat-value ${pctColor}">${fmtPct(totalPct)}</div>
+      <div class="stat-label">Account Return</div>
+      <div class="stat-value ${acctColor}">${fmtPct(acctReturn)}</div>
       <div class="stat-sub">(<span class="sens" style="color:${summary.total_pnl>=0?'#4ade80':'#f87171'}">${fmtDollar(summary.total_pnl)}</span>)</div>
     </div>
     <div class="card">
@@ -269,7 +269,6 @@ async function init() {
   // ── Cumulative chart — two lines ────────────────────────────────
   // Line 1: sum of per-trade collateral returns (capital efficiency)
   // Line 2: account % return based on starting balance (compounding)
-  const startBal = summary.starting_balance || 1225;
   let collatCumul = 0, runningBal = startBal;
   const cumulLabels = [], collatData = [], accountData = [];
 
