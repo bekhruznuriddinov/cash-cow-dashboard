@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-18 12:10",
+  "generated": "2026-06-18 12:14",
   "trades": [
     {
       "short_strike": 723.0,
@@ -7,14 +7,14 @@
       "delta": 0.118,
       "credit": 0.08,
       "contracts": 1,
-      "pnl": 0.0,
+      "pnl": 7.0,
       "buying_power": 233.41,
       "hold_min": 374.5,
       "direction": "put",
       "vix": 21.07,
       "date": "2026-06-10",
       "time": "09:30:54",
-      "result": "EXPIRE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 716.0,
@@ -138,10 +138,10 @@
     }
   ],
   "summary": {
-    "total_pnl": 62.0,
-    "win_rate": 88.9,
+    "total_pnl": 69.0,
+    "win_rate": 100.0,
     "total_trades": 9,
-    "wins": 8,
+    "wins": 9,
     "losses": 0,
     "skips": 0,
     "avg_hold_min": 152.3,
