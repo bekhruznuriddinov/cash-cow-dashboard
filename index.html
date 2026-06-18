@@ -382,7 +382,7 @@ async function init() {
 
   // ── Trade table (no contracts, P&L blurred) ──────────────────────
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = [...entered].reverse().map(t => {
+  tbody.innerHTML = [...entered].reverse().slice(0, 20).map(t => {
     const ret = calcReturn(t);
     const retColor = ret > 0 ? 'color:#4ade80' : ret < 0 ? 'color:#f87171' : '';
     const pnlColor2 = t.pnl > 0 ? '#4ade80' : t.pnl < 0 ? '#f87171' : '#94a3b8';
