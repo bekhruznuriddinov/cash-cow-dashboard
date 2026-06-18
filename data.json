@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-18 12:02",
+  "generated": "2026-06-18 12:10",
   "trades": [
     {
       "short_strike": 723.0,
@@ -14,7 +14,7 @@
       "vix": 21.07,
       "date": "2026-06-10",
       "time": "09:30:54",
-      "result": "PROFIT"
+      "result": "EXPIRE"
     },
     {
       "short_strike": 716.0,
@@ -139,9 +139,9 @@
   ],
   "summary": {
     "total_pnl": 62.0,
-    "win_rate": 100.0,
+    "win_rate": 88.9,
     "total_trades": 9,
-    "wins": 9,
+    "wins": 8,
     "losses": 0,
     "skips": 0,
     "avg_hold_min": 152.3,
