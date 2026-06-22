@@ -168,7 +168,7 @@
 
 <div class="grid" style="margin-top:16px; grid-template-columns:1fr;">
   <div class="card">
-    <div class="chart-title">Return % Per Trade</div>
+    <div class="chart-title">Return % Per Day</div>
     <canvas id="dailyChart" style="width:100%;height:160px;display:block;"></canvas>
   </div>
 </div>
@@ -266,16 +266,24 @@ async function init() {
     </div>
   `;
 
+  // ── Aggregate trades by day ──────────────────────────────────────
+  const byDay = new Map();
+  for (const t of entered) {
+    const d = t.date || '';
+    if (!byDay.has(d)) byDay.set(d, { collatReturn: 0, pnl: 0 });
+    const day = byDay.get(d);
+    day.collatReturn += calcReturn(t);
+    day.pnl += t.pnl;
+  }
+
   // ── Cumulative chart — two lines ────────────────────────────────
-  // Line 1: sum of per-trade collateral returns (capital efficiency)
-  // Line 2: account % return based on starting balance (compounding)
   let collatCumul = 0, runningBal = startBal;
   const cumulLabels = [], collatData = [], accountData = [];
 
-  for (const t of entered) {
-    collatCumul += calcReturn(t);
-    runningBal  += t.pnl;
-    cumulLabels.push(t.date ? t.date.slice(5) : '');
+  for (const [d, day] of byDay) {
+    collatCumul += day.collatReturn;
+    runningBal  += day.pnl;
+    cumulLabels.push(d.slice(5));
     collatData.push(+collatCumul.toFixed(2));
     accountData.push(+((runningBal - startBal) / startBal * 100).toFixed(2));
   }
@@ -354,12 +362,16 @@ async function init() {
     }
   });
 
-  // ── Per-trade % return bars ──────────────────────────────────────
-  const dailyData = entered.map(t => +calcReturn(t).toFixed(2));
+  // ── Per-day % return bars ─────────────────────────────────────────
+  const dailyLabels = [], dailyData = [];
+  for (const [d, day] of byDay) {
+    dailyLabels.push(d.slice(5));
+    dailyData.push(+day.collatReturn.toFixed(2));
+  }
   new Chart(document.getElementById('dailyChart'), {
     type: 'bar',
     data: {
-      labels: entered.map(t => t.date ? t.date.slice(5) : ''),
+      labels: dailyLabels,
       datasets: [{
         data: dailyData,
         backgroundColor: dailyData.map(v => v >= 0 ? '#4ade80' : '#f87171'),
