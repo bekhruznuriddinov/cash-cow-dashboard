@@ -276,15 +276,13 @@ async function init() {
     day.pnl += t.pnl;
   }
 
-  // ── Cumulative chart — two lines ────────────────────────────────
-  let collatCumul = 0, runningBal = startBal;
-  const cumulLabels = [], collatData = [], accountData = [];
+  // ── Cumulative chart — account return ────────────────────────────
+  let runningBal = startBal;
+  const cumulLabels = [], accountData = [];
 
   for (const [d, day] of byDay) {
-    collatCumul += day.collatReturn;
     runningBal  += day.pnl;
     cumulLabels.push(d.slice(5));
-    collatData.push(+collatCumul.toFixed(2));
     accountData.push(+((runningBal - startBal) / startBal * 100).toFixed(2));
   }
 
@@ -294,8 +292,8 @@ async function init() {
       labels: cumulLabels,
       datasets: [
         {
-          label: 'Collateral return',
-          data: collatData,
+          label: 'Account return',
+          data: accountData,
           borderColor: '#4ade80',
           backgroundColor: 'rgba(74,222,128,0.06)',
           pointBackgroundColor: '#4ade80',
@@ -303,24 +301,13 @@ async function init() {
           fill: true,
           tension: 0.3,
         },
-        {
-          label: 'Account return',
-          data: accountData,
-          borderColor: '#60a5fa',
-          backgroundColor: 'rgba(96,165,250,0.04)',
-          pointBackgroundColor: '#60a5fa',
-          pointRadius: 3,
-          fill: false,
-          tension: 0.3,
-          borderDash: [4, 3],
-        },
       ]
     },
     options: {
       responsive: false,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } },
+        legend: { display: false },
       },
       scales: {
         x: { grid: { color: '#1e2d45' } },
