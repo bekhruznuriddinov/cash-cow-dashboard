@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-23 13:39",
+  "generated": "2026-06-23 13:41",
   "trades": [
     {
       "short_strike": 723.0,
@@ -164,7 +164,7 @@
       "vix": 16.95,
       "date": "2026-06-22",
       "time": "12:25:10",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     },
     {
       "short_strike": 724.0,
@@ -224,7 +224,7 @@
       "vix": 20.24,
       "date": "2026-06-23",
       "time": "13:56:25",
-      "result": "MANUAL_CLOSE"
+      "result": "PROFIT"
     }
   ],
   "summary": {
