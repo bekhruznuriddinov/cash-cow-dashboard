@@ -439,11 +439,6 @@ async function init() {
       <div class="stat-value ${acctColor}">${fmtPct(acctReturn)}</div>
       <div class="stat-sub">(<span class="sens" style="color:${tradingPnl>=0?'#4ade80':'#f87171'}">${fmtDollar(tradingPnl)}</span>)</div>
     </div>
-    ${balDisplay ? `<div class="card">
-      <div class="stat-label">Balance</div>
-      <div class="stat-value neutral"><span class="sens">${balDisplay}</span></div>
-      ${netDep ? `<div class="stat-sub"><span class="sens">${fmtDollar(netDep)} deposits</span></div>` : ''}
-    </div>` : ''}
     <div class="card">
       <div class="stat-label">Win Rate</div>
       <div class="stat-value neutral">${summary.win_rate}%</div>
