@@ -141,6 +141,8 @@
   .badge.expire { background:#1e3a5f; color:#60a5fa; }
   .badge.manual { background:#3b2a00; color:#fbbf24; }
   .badge.skip   { background:#1e293b; color:#64748b; }
+
+  .gran-btn.active { color: #4ade80; border-color: #166534; }
 </style>
 </head>
 <body>
@@ -170,6 +172,23 @@
   <div class="card">
     <div class="chart-title">Return % Per Day</div>
     <canvas id="dailyChart" style="width:100%;height:160px;display:block;"></canvas>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:16px; grid-template-columns:1fr;">
+  <div class="card">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div>
+        <div class="chart-title" style="margin-bottom:0;">Account Balance — 1Y Forecast</div>
+        <div class="stat-sub" id="forecastSub"></div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="toggle-btn gran-btn" data-g="days" onclick="switchGranularity('days')">Days</button>
+        <button class="toggle-btn gran-btn" data-g="weeks" onclick="switchGranularity('weeks')">Weeks</button>
+        <button class="toggle-btn gran-btn active" data-g="months" onclick="switchGranularity('months')">Months</button>
+      </div>
+    </div>
+    <canvas id="balanceChart" style="width:100%;height:260px;display:block;"></canvas>
   </div>
 </div>
 
@@ -208,7 +227,7 @@ function toggleReveal() {
 }
 
 function badgeClass(r) {
-  return {PROFIT:'profit',STOP:'stop',EXPIRE:'expire',EXPIRE_ITM:'stop',MANUAL_CLOSE:'manual',SKIP:'skip'}[r]||'skip';
+  return {PROFIT:'profit',STOP:'stop',EXPIRE:'expire',EXPIRE_ITM:'stop',SKIP:'skip'}[r]||'skip';
 }
 
 function calcReturn(t) {
@@ -231,6 +250,140 @@ function fmtDollar(n) {
 function holdStr(m) {
   if (!m) return '—';
   return m < 60 ? m.toFixed(0)+'m' : (m/60).toFixed(1)+'h';
+}
+
+let _balChart = null, _byDayMap = null, _startBalance = 0;
+
+function switchGranularity(g) {
+  document.querySelectorAll('.gran-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.g === g);
+  });
+  _renderBalance(g);
+}
+
+function _renderBalance(granularity) {
+  const byDay = _byDayMap;
+  const startBal = _startBalance;
+  if (!byDay || !byDay.size) return;
+
+  const daily = [];
+  let bal = startBal;
+  for (const [d, day] of byDay) {
+    bal += day.pnl;
+    daily.push({ date: d, bal: +bal.toFixed(2) });
+  }
+
+  let hist;
+  if (granularity === 'weeks') {
+    const map = new Map();
+    for (const p of daily) {
+      const dt = new Date(p.date + 'T12:00:00');
+      const mon = new Date(dt);
+      mon.setDate(dt.getDate() - ((dt.getDay() + 6) % 7));
+      map.set(mon.toISOString().slice(0, 10), p);
+    }
+    hist = [...map.values()];
+  } else if (granularity === 'months') {
+    const map = new Map();
+    for (const p of daily) map.set(p.date.slice(0, 7), p);
+    hist = [...map.values()];
+  } else {
+    hist = daily;
+  }
+
+  const totalReturn = daily[daily.length - 1].bal / startBal;
+  const nDays = daily.length;
+  const dailyRate = nDays > 1 ? Math.pow(totalReturn, 1 / nDays) - 1 : 0;
+  const annualPct = (Math.pow(1 + dailyRate, 252) - 1) * 100;
+
+  document.getElementById('forecastSub').textContent =
+    'Based on ' + (dailyRate * 100).toFixed(2) + '% daily compound rate (' +
+    annualPct.toFixed(0) + '% annualized)';
+
+  let nPeriods, periodRate;
+  if (granularity === 'weeks') {
+    nPeriods = 52;
+    periodRate = Math.pow(1 + dailyRate, 5) - 1;
+  } else if (granularity === 'months') {
+    nPeriods = 12;
+    periodRate = Math.pow(1 + dailyRate, 21) - 1;
+  } else {
+    nPeriods = 252;
+    periodRate = dailyRate;
+  }
+
+  const lastHist = hist[hist.length - 1];
+  let fBal = lastHist.bal;
+  let fDate = new Date(lastHist.date + 'T12:00:00');
+  const forecast = [{ date: lastHist.date, bal: fBal }];
+
+  for (let i = 0; i < nPeriods; i++) {
+    if (granularity === 'days') {
+      fDate.setDate(fDate.getDate() + 1);
+      while (fDate.getDay() === 0 || fDate.getDay() === 6) fDate.setDate(fDate.getDate() + 1);
+    } else if (granularity === 'weeks') {
+      fDate.setDate(fDate.getDate() + 7);
+    } else {
+      fDate.setMonth(fDate.getMonth() + 1);
+    }
+    fBal *= (1 + periodRate);
+    forecast.push({ date: fDate.toISOString().slice(0, 10), bal: +fBal.toFixed(2) });
+  }
+
+  const histLabels = hist.map(h => h.date.slice(5));
+  const foreLabels = forecast.slice(1).map(f => f.date.slice(5));
+  const allLabels = [...histLabels, ...foreLabels];
+
+  const histData = [...hist.map(h => h.bal), ...new Array(foreLabels.length).fill(null)];
+  const foreData = [...new Array(hist.length - 1).fill(null), lastHist.bal, ...forecast.slice(1).map(f => f.bal)];
+
+  if (_balChart) _balChart.destroy();
+
+  _balChart = new Chart(document.getElementById('balanceChart'), {
+    type: 'line',
+    data: {
+      labels: allLabels,
+      datasets: [
+        {
+          label: 'Actual',
+          data: histData,
+          borderColor: '#4ade80',
+          backgroundColor: 'rgba(74,222,128,0.06)',
+          pointBackgroundColor: '#4ade80',
+          pointRadius: 2,
+          fill: true,
+          tension: 0.3,
+        },
+        {
+          label: 'Forecast',
+          data: foreData,
+          borderColor: '#fbbf24',
+          backgroundColor: 'rgba(251,191,36,0.04)',
+          borderDash: [6, 3],
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3,
+        },
+      ]
+    },
+    options: {
+      responsive: false,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } },
+      },
+      scales: {
+        x: {
+          grid: { color: '#1e2d45' },
+          ticks: { maxTicksLimit: 14 },
+        },
+        y: {
+          grid: { color: '#1e2d45' },
+          ticks: { callback: v => '$' + v.toLocaleString() },
+        }
+      }
+    }
+  });
 }
 
 async function init() {
@@ -326,7 +479,6 @@ async function init() {
   const allSlices = [
     { label: 'Profit',   count: counts.PROFIT||0,                            color: '#4ade80' },
     { label: 'Expire',   count: counts.EXPIRE||0,                            color: '#60a5fa' },
-    { label: 'Manual',   count: counts.MANUAL_CLOSE||0,                      color: '#fbbf24' },
     { label: 'Stop/ITM', count: (counts.STOP||0)+(counts.EXPIRE_ITM||0),     color: '#f87171' },
     { label: 'Skip',     count: counts.SKIP||0,                              color: '#334155' },
   ].filter(s => s.count > 0);
@@ -378,6 +530,11 @@ async function init() {
       }
     }
   });
+
+  // ── Balance forecast chart ───────────────────────────────────────
+  _byDayMap = byDay;
+  _startBalance = startBal;
+  _renderBalance('months');
 
   // ── Trade table (no contracts, P&L blurred) ──────────────────────
   const tbody = document.getElementById('tableBody');

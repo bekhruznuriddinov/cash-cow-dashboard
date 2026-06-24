@@ -14,7 +14,7 @@ LOG_DIR     = os.path.dirname(SCRIPT_DIR)
 LOG_PATTERN = os.path.join(LOG_DIR, "trades.log*")
 OUT_FILE    = os.path.join(SCRIPT_DIR, "data.json")
 
-LIVE_RESULTS = {"PROFIT", "STOP", "EXPIRE", "EXPIRE_ITM", "MANUAL_CLOSE", "SKIP"}
+LIVE_RESULTS = {"PROFIT", "STOP", "EXPIRE", "EXPIRE_ITM", "SKIP"}
 
 def _float(s, default=0.0):
     try:
@@ -144,8 +144,8 @@ def summarise(records):
             trades.append(day[-1])
 
     entered = [t for t in trades if t["result"] != "SKIP"]
-    wins    = [t for t in entered if t["pnl"] > 0 or t["result"] in ("PROFIT", "EXPIRE")]
-    losses  = [t for t in entered if t["pnl"] < 0 or t["result"] in ("STOP", "EXPIRE_ITM")]
+    wins    = [t for t in entered if t["pnl"] > 0]
+    losses  = [t for t in entered if t["pnl"] < 0]
     total_pnl   = sum(t["pnl"] for t in entered)
     avg_hold    = (sum(t["hold_min"] for t in entered) / len(entered)) if entered else 0
     current_bp  = trades[-1]["buying_power"] if trades else 0
