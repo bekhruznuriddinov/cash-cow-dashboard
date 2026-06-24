@@ -237,7 +237,9 @@
     "avg_hold_min": 136.2,
     "current_bp": 1525.08,
     "starting_balance": 1525.08,
-    "start_date": "2026-06-23"
+    "start_date": "2026-06-23",
+    "real_balance": 1525.08,
+    "net_deposits": 0.0
   },
   "balance_history": [
     {
