@@ -458,10 +458,12 @@ async function init() {
     </div>
   `;
 
-  // ── Aggregate trades by day ──────────────────────────────────────
+  // ── Aggregate trades by day (only after start date for charts) ───
+  const startDate = summary.start_date || '';
   const byDay = new Map();
   for (const t of entered) {
     const d = t.date || '';
+    if (d <= startDate) continue;
     if (!byDay.has(d)) byDay.set(d, { collatReturn: 0, pnl: 0 });
     const day = byDay.get(d);
     day.collatReturn += calcReturn(t);

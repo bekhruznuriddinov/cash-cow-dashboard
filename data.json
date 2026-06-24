@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-23 17:17",
+  "generated": "2026-06-23 17:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -228,7 +228,7 @@
     }
   ],
   "summary": {
-    "total_pnl": 155.0,
+    "total_pnl": 0,
     "win_rate": 100.0,
     "total_trades": 14,
     "wins": 14,
@@ -236,15 +236,16 @@
     "skips": 1,
     "avg_hold_min": 136.2,
     "current_bp": 1525.08,
-    "starting_balance": 1225.0,
+    "starting_balance": 1525.08,
+    "start_date": "2026-06-23",
     "real_balance": 1525.08,
-    "net_deposits": 500.0
+    "net_deposits": 0.0
   },
   "balance_history": [
     {
       "date": "2026-06-23",
       "balance": 1525.08,
-      "net_deposits": 500.0
+      "net_deposits": 0.0
     }
   ]
 }

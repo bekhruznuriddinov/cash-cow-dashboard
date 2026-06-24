@@ -141,7 +141,7 @@ def _save_balance_history(history):
         json.dump(history, f, indent=2)
 
 
-AGENT_START_DATE = "2026-06-10"
+AGENT_START_DATE = "2026-06-23"
 
 def _fetch_rh_balance():
     """Log in to Robinhood and fetch real account balance + net deposits since agent start."""
@@ -234,14 +234,16 @@ def summarise(records, balance_history, real_balance, net_deposits):
             trades.append(day[-1])
 
     entered = [t for t in trades if t["result"] != "SKIP"]
+    # Stats use all trades; P&L only counts trades after the reset date
+    tracked = [t for t in entered if (t.get("date") or "") > AGENT_START_DATE]
     wins    = [t for t in entered if t["pnl"] > 0]
     losses  = [t for t in entered if t["pnl"] < 0]
-    total_pnl   = sum(t["pnl"] for t in entered)
+    total_pnl   = sum(t["pnl"] for t in tracked)
     avg_hold    = (sum(t["hold_min"] for t in entered) / len(entered)) if entered else 0
     current_bp  = trades[-1]["buying_power"] if trades else 0
     win_rate    = (len(wins) / len(entered) * 100) if entered else 0
 
-    starting_balance = 1225.0
+    starting_balance = 1525.08
 
     summary = {
         "total_pnl":        round(total_pnl, 2),
@@ -253,6 +255,7 @@ def summarise(records, balance_history, real_balance, net_deposits):
         "avg_hold_min":     round(avg_hold, 1),
         "current_bp":       current_bp,
         "starting_balance": starting_balance,
+        "start_date":       AGENT_START_DATE,
     }
 
     if real_balance is not None:
