@@ -3,5 +3,10 @@
     "date": "2026-06-23",
     "balance": 1525.08,
     "net_deposits": 0.0
+  },
+  {
+    "date": "2026-06-24",
+    "balance": 1474.5,
+    "net_deposits": 0.0
   }
 ]
