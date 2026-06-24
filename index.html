@@ -188,7 +188,9 @@
         <button class="toggle-btn gran-btn active" data-g="months" onclick="switchGranularity('months')">Months</button>
       </div>
     </div>
-    <canvas id="balanceChart" style="width:100%;height:260px;display:block;"></canvas>
+    <div style="position:relative; height:260px;">
+      <canvas id="balanceChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -268,6 +270,13 @@ function _renderBalance(granularity) {
 
   const daily = [];
   let bal = startBal;
+  const firstDate = [...byDay.keys()][0];
+  if (firstDate) {
+    const d0 = new Date(firstDate + 'T12:00:00');
+    d0.setDate(d0.getDate() - 1);
+    while (d0.getDay() === 0 || d0.getDay() === 6) d0.setDate(d0.getDate() - 1);
+    daily.push({ date: d0.toISOString().slice(0, 10), bal: startBal });
+  }
   for (const [d, day] of byDay) {
     bal += day.pnl;
     daily.push({ date: d, bal: +bal.toFixed(2) });
@@ -367,7 +376,7 @@ function _renderBalance(granularity) {
       ]
     },
     options: {
-      responsive: false,
+      responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } },
