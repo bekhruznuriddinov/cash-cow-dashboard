@@ -254,7 +254,7 @@ function holdStr(m) {
   return m < 60 ? m.toFixed(0)+'m' : (m/60).toFixed(1)+'h';
 }
 
-let _balChart = null, _byDayMap = null, _startBalance = 0;
+let _balChart = null, _byDayMap = null, _startBalance = 0, _balanceHistory = [];
 
 function switchGranularity(g) {
   document.querySelectorAll('.gran-btn').forEach(b => {
@@ -266,7 +266,17 @@ function switchGranularity(g) {
 function _renderBalance(granularity) {
   const byDay = _byDayMap;
   const startBal = _startBalance;
+  const realHist = _balanceHistory;
   if (!byDay || !byDay.size) return;
+
+  // Build daily balance series — use real snapshots where available,
+  // fall back to P&L-summed for dates before we started recording.
+  const realByDate = new Map();
+  let netDeposits = 0;
+  for (const h of realHist) {
+    realByDate.set(h.date, h);
+    netDeposits = h.net_deposits || 0;
+  }
 
   const daily = [];
   let bal = startBal;
@@ -278,8 +288,15 @@ function _renderBalance(granularity) {
     daily.push({ date: d0.toISOString().slice(0, 10), bal: startBal });
   }
   for (const [d, day] of byDay) {
-    bal += day.pnl;
-    daily.push({ date: d, bal: +bal.toFixed(2) });
+    const snap = realByDate.get(d);
+    if (snap) {
+      bal = snap.balance - (snap.net_deposits || 0) + netDeposits;
+      bal = snap.balance;
+      daily.push({ date: d, bal: +snap.balance.toFixed(2) });
+    } else {
+      bal += day.pnl;
+      daily.push({ date: d, bal: +bal.toFixed(2) });
+    }
   }
 
   let hist;
@@ -300,7 +317,10 @@ function _renderBalance(granularity) {
     hist = daily;
   }
 
-  const totalReturn = daily[daily.length - 1].bal / startBal;
+  // Use deposit-adjusted balance for return calculations
+  const lastBal = daily[daily.length - 1].bal;
+  const adjustedReturn = (lastBal - startBal - netDeposits) / startBal;
+  const totalReturn = lastBal / startBal;
   const nDays = daily.length;
   const dailyRate = nDays > 1 ? Math.pow(totalReturn, 1 / nDays) - 1 : 0;
   const annualPct = (Math.pow(1 + dailyRate, 252) - 1) * 100;
@@ -399,21 +419,31 @@ async function init() {
   const res  = await fetch('data.json?_=' + Date.now());
   const data = await res.json();
   const { trades, summary } = data;
+  const balanceHistory = data.balance_history || [];
 
   document.getElementById('updated').textContent = 'Updated ' + data.generated;
 
   const entered = trades.filter(t => t.result !== 'SKIP');
   const startBal = summary.starting_balance || 1225;
-  const acctReturn = startBal > 0 ? (summary.total_pnl / startBal) * 100 : 0;
+  const netDep = summary.net_deposits || 0;
+  const realBal = summary.real_balance;
+  const tradingPnl = summary.total_pnl;
+  const acctReturn = startBal > 0 ? (tradingPnl / startBal) * 100 : 0;
   const acctColor = acctReturn >= 0 ? 'green' : 'red';
+  const balDisplay = realBal != null ? '$' + realBal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) : null;
 
-  // ── Stats cards (no buying power) ───────────────────────────────
+  // ── Stats cards ────────────────────────────────────────────────
   document.getElementById('stats').innerHTML = `
     <div class="card">
       <div class="stat-label">Account Return</div>
       <div class="stat-value ${acctColor}">${fmtPct(acctReturn)}</div>
-      <div class="stat-sub">(<span class="sens" style="color:${summary.total_pnl>=0?'#4ade80':'#f87171'}">${fmtDollar(summary.total_pnl)}</span>)</div>
+      <div class="stat-sub">(<span class="sens" style="color:${tradingPnl>=0?'#4ade80':'#f87171'}">${fmtDollar(tradingPnl)}</span>)</div>
     </div>
+    ${balDisplay ? `<div class="card">
+      <div class="stat-label">Balance</div>
+      <div class="stat-value neutral"><span class="sens">${balDisplay}</span></div>
+      ${netDep ? `<div class="stat-sub"><span class="sens">${fmtDollar(netDep)} deposits</span></div>` : ''}
+    </div>` : ''}
     <div class="card">
       <div class="stat-label">Win Rate</div>
       <div class="stat-value neutral">${summary.win_rate}%</div>
@@ -543,6 +573,7 @@ async function init() {
   // ── Balance forecast chart ───────────────────────────────────────
   _byDayMap = byDay;
   _startBalance = startBal;
+  _balanceHistory = balanceHistory;
   _renderBalance('months');
 
   // ── Trade table (no contracts, P&L blurred) ──────────────────────
