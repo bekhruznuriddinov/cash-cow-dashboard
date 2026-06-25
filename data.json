@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-24 13:30",
+  "generated": "2026-06-25 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -270,20 +270,80 @@
       "date": "2026-06-24",
       "time": "13:33:55",
       "result": "STOP"
+    },
+    {
+      "short_strike": 731.0,
+      "long_strike": 730.0,
+      "delta": 0.102,
+      "credit": 0.06,
+      "contracts": 3,
+      "pnl": -102.0,
+      "buying_power": 1380.94,
+      "hold_min": 106.1,
+      "direction": "put",
+      "vix": 17.9,
+      "date": "2026-06-25",
+      "time": "09:30:47",
+      "result": "STOP"
+    },
+    {
+      "short_strike": 739.0,
+      "long_strike": 740.0,
+      "delta": 0.12,
+      "credit": 0.09,
+      "contracts": 3,
+      "pnl": 24.0,
+      "buying_power": 1442.38,
+      "hold_min": 17.4,
+      "direction": "call",
+      "vix": 17.9,
+      "date": "2026-06-25",
+      "time": "14:28:07",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 727.0,
+      "long_strike": 726.0,
+      "delta": 0.095,
+      "credit": 0.06,
+      "contracts": 3,
+      "pnl": 15.0,
+      "buying_power": 1418.9,
+      "hold_min": 35.3,
+      "direction": "put",
+      "vix": 17.9,
+      "date": "2026-06-25",
+      "time": "13:51:09",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 730.0,
+      "long_strike": 729.0,
+      "delta": 0.124,
+      "credit": 0.07,
+      "contracts": 3,
+      "pnl": -3.0,
+      "buying_power": 1444.86,
+      "hold_min": 60.9,
+      "direction": "put",
+      "vix": 17.9,
+      "date": "2026-06-25",
+      "time": "14:46:40",
+      "result": "STOP"
     }
   ],
   "summary": {
-    "total_pnl": -76.0,
-    "win_rate": 94.1,
-    "total_trades": 17,
-    "wins": 16,
-    "losses": 1,
+    "total_pnl": -142.0,
+    "win_rate": 85.7,
+    "total_trades": 21,
+    "wins": 18,
+    "losses": 3,
     "skips": 1,
-    "avg_hold_min": 116.4,
-    "current_bp": 1451.02,
+    "avg_hold_min": 104.7,
+    "current_bp": 1444.86,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1474.5,
+    "real_balance": 1444.86,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -295,6 +355,11 @@
     {
       "date": "2026-06-24",
       "balance": 1474.5,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-06-25",
+      "balance": 1444.86,
       "net_deposits": 0.0
     }
   ]
