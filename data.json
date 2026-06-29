@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-26 13:30",
+  "generated": "2026-06-29 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -390,20 +390,65 @@
       "date": "2026-06-26",
       "time": "14:30:15",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 730.0,
+      "long_strike": 729.0,
+      "delta": 0.117,
+      "credit": 0.06,
+      "contracts": 4,
+      "pnl": 20.0,
+      "buying_power": 1555.76,
+      "hold_min": 146.8,
+      "direction": "put",
+      "vix": 18.22,
+      "date": "2026-06-29",
+      "time": "09:32:49",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 734.0,
+      "long_strike": 733.0,
+      "delta": 0.107,
+      "credit": 0.04,
+      "contracts": 4,
+      "pnl": 12.0,
+      "buying_power": 1567.08,
+      "hold_min": 122.9,
+      "direction": "put",
+      "vix": 18.22,
+      "date": "2026-06-29",
+      "time": "12:01:15",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 737.0,
+      "long_strike": 736.0,
+      "delta": 0.108,
+      "credit": 0.04,
+      "contracts": 4,
+      "pnl": 12.0,
+      "buying_power": 1578.4,
+      "hold_min": 40.9,
+      "direction": "put",
+      "vix": 18.22,
+      "date": "2026-06-29",
+      "time": "14:05:32",
+      "result": "PROFIT"
     }
   ],
   "summary": {
-    "total_pnl": -48.0,
-    "win_rate": 88.0,
-    "total_trades": 25,
-    "wins": 22,
+    "total_pnl": -4.0,
+    "win_rate": 89.3,
+    "total_trades": 28,
+    "wins": 25,
     "losses": 3,
     "skips": 1,
-    "avg_hold_min": 102.5,
-    "current_bp": 1536.44,
+    "avg_hold_min": 102.6,
+    "current_bp": 1578.4,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1536.44,
+    "real_balance": 1578.4,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -425,6 +470,11 @@
     {
       "date": "2026-06-26",
       "balance": 1536.44,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-06-29",
+      "balance": 1578.4,
       "net_deposits": 0.0
     }
   ]
