@@ -73,5 +73,10 @@
     "date": "2026-07-14",
     "balance": 1761.29,
     "net_deposits": 0.0
+  },
+  {
+    "date": "2026-07-15",
+    "balance": 1776.61,
+    "net_deposits": 0.0
   }
 ]
