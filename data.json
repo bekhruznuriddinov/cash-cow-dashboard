@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-15 13:30",
+  "generated": "2026-07-16 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -765,20 +765,65 @@
       "date": "2026-07-15",
       "time": "09:30:46",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 758.0,
+      "long_strike": 759.0,
+      "delta": 0.084,
+      "credit": 0.05,
+      "contracts": 4,
+      "pnl": 16.0,
+      "buying_power": 1791.91,
+      "hold_min": 94.6,
+      "direction": "call",
+      "vix": 16.2,
+      "date": "2026-07-16",
+      "time": "09:30:36",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 750.0,
+      "long_strike": 749.0,
+      "delta": 0.124,
+      "credit": 0.08,
+      "contracts": 4,
+      "pnl": -92.0,
+      "buying_power": 1723.23,
+      "hold_min": 154.8,
+      "direction": "put",
+      "vix": 16.2,
+      "date": "2026-07-16",
+      "time": "11:30:24",
+      "result": "STOP"
+    },
+    {
+      "short_strike": 747.0,
+      "long_strike": 746.0,
+      "delta": 0.075,
+      "credit": 0.04,
+      "contracts": 4,
+      "pnl": -24.0,
+      "buying_power": 1702.55,
+      "hold_min": 103.7,
+      "direction": "put",
+      "vix": 16.2,
+      "date": "2026-07-16",
+      "time": "14:06:25",
+      "result": "STOP"
     }
   ],
   "summary": {
-    "total_pnl": 128.0,
-    "win_rate": 89.6,
-    "total_trades": 48,
-    "wins": 43,
-    "losses": 5,
+    "total_pnl": 28.0,
+    "win_rate": 86.3,
+    "total_trades": 51,
+    "wins": 44,
+    "losses": 7,
     "skips": 3,
-    "avg_hold_min": 97.4,
-    "current_bp": 1776.61,
+    "avg_hold_min": 98.6,
+    "current_bp": 1702.55,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1776.61,
+    "real_balance": 1702.55,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -860,6 +905,11 @@
     {
       "date": "2026-07-15",
       "balance": 1776.61,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-07-16",
+      "balance": 1702.55,
       "net_deposits": 0.0
     }
   ]
