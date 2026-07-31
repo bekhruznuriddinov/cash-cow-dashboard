@@ -128,5 +128,10 @@
     "date": "2026-07-30",
     "balance": 1593.61,
     "net_deposits": 0.0
+  },
+  {
+    "date": "2026-07-31",
+    "balance": 1529.21,
+    "net_deposits": 0.0
   }
 ]
