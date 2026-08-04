@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-03 13:30",
+  "generated": "2026-08-04 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -1155,20 +1155,65 @@
       "date": "2026-08-03",
       "time": "10:04:52",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 756.0,
+      "long_strike": 755.0,
+      "delta": 0.105,
+      "credit": 0.04,
+      "contracts": 4,
+      "pnl": 12.0,
+      "buying_power": 1575.74,
+      "hold_min": 55.1,
+      "direction": "put",
+      "vix": 15.57,
+      "date": "2026-08-04",
+      "time": "09:43:28",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 763.0,
+      "long_strike": 762.0,
+      "delta": 0.114,
+      "credit": 0.06,
+      "contracts": 4,
+      "pnl": 20.0,
+      "buying_power": 1595.06,
+      "hold_min": 121.9,
+      "direction": "put",
+      "vix": 15.57,
+      "date": "2026-08-04",
+      "time": "11:33:36",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 776.0,
+      "long_strike": 777.0,
+      "delta": 0.095,
+      "credit": 0.05,
+      "contracts": 4,
+      "pnl": 8.0,
+      "buying_power": 1598.38,
+      "hold_min": 129.0,
+      "direction": "call",
+      "vix": 15.57,
+      "date": "2026-08-04",
+      "time": "13:36:51",
+      "result": "PROFIT"
     }
   ],
   "summary": {
-    "total_pnl": -57.0,
-    "win_rate": 86.3,
-    "total_trades": 73,
-    "wins": 63,
+    "total_pnl": -17.0,
+    "win_rate": 86.8,
+    "total_trades": 76,
+    "wins": 66,
     "losses": 10,
     "skips": 4,
-    "avg_hold_min": 106.1,
-    "current_bp": 1560.42,
+    "avg_hold_min": 105.9,
+    "current_bp": 1598.38,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1560.42,
+    "real_balance": 1598.38,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -1310,6 +1355,11 @@
     {
       "date": "2026-08-03",
       "balance": 1560.42,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-08-04",
+      "balance": 1598.38,
       "net_deposits": 0.0
     }
   ]
