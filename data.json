@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-06 13:30",
+  "generated": "2026-08-07 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -1230,20 +1230,65 @@
       "date": "2026-08-06",
       "time": "09:30:58",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 777.0,
+      "long_strike": 778.0,
+      "delta": 0.091,
+      "credit": 0.05,
+      "contracts": 4,
+      "pnl": 16.0,
+      "buying_power": 1652.34,
+      "hold_min": 36.2,
+      "direction": "call",
+      "vix": 15.31,
+      "date": "2026-08-07",
+      "time": "09:36:13",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 767.0,
+      "long_strike": 766.0,
+      "delta": 0.094,
+      "credit": 0.05,
+      "contracts": 4,
+      "pnl": 16.0,
+      "buying_power": 1667.66,
+      "hold_min": 39.7,
+      "direction": "put",
+      "vix": 15.31,
+      "date": "2026-08-07",
+      "time": "10:46:25",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 770.0,
+      "long_strike": 769.0,
+      "delta": 0.111,
+      "credit": 0.06,
+      "contracts": 4,
+      "pnl": 16.0,
+      "buying_power": 1686.98,
+      "hold_min": 232.8,
+      "direction": "put",
+      "vix": 15.31,
+      "date": "2026-08-07",
+      "time": "11:27:29",
+      "result": "PROFIT"
     }
   ],
   "summary": {
-    "total_pnl": 23.0,
-    "win_rate": 87.2,
-    "total_trades": 78,
-    "wins": 68,
+    "total_pnl": 71.0,
+    "win_rate": 87.7,
+    "total_trades": 81,
+    "wins": 71,
     "losses": 10,
     "skips": 4,
-    "avg_hold_min": 106.7,
-    "current_bp": 1637.02,
+    "avg_hold_min": 106.5,
+    "current_bp": 1686.98,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1637.02,
+    "real_balance": 1686.98,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -1400,6 +1445,11 @@
     {
       "date": "2026-08-06",
       "balance": 1637.02,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-08-07",
+      "balance": 1686.98,
       "net_deposits": 0.0
     }
   ]
