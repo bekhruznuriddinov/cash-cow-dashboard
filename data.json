@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-27 13:30",
+  "generated": "2026-08-28 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -1515,20 +1515,65 @@
       "date": "2026-08-27",
       "time": "09:30:49",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 765.0,
+      "long_strike": 764.0,
+      "delta": 0.094,
+      "credit": 0.04,
+      "contracts": 4,
+      "pnl": 12.0,
+      "buying_power": 1805.32,
+      "hold_min": 95.0,
+      "direction": "put",
+      "vix": 14.47,
+      "date": "2026-08-28",
+      "time": "13:29:19",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 769.0,
+      "long_strike": 768.0,
+      "delta": 0.104,
+      "credit": 0.05,
+      "contracts": 4,
+      "pnl": -116.0,
+      "buying_power": 1774.7,
+      "hold_min": 92.9,
+      "direction": "put",
+      "vix": 14.47,
+      "date": "2026-08-28",
+      "time": "10:46:02",
+      "result": "STOP"
+    },
+    {
+      "short_strike": 774.0,
+      "long_strike": 775.0,
+      "delta": 0.098,
+      "credit": 0.06,
+      "contracts": 4,
+      "pnl": 20.0,
+      "buying_power": 1794.02,
+      "hold_min": 62.2,
+      "direction": "call",
+      "vix": 14.47,
+      "date": "2026-08-28",
+      "time": "12:20:42",
+      "result": "PROFIT"
     }
   ],
   "summary": {
-    "total_pnl": 238.0,
-    "win_rate": 89.0,
-    "total_trades": 91,
-    "wins": 81,
-    "losses": 10,
+    "total_pnl": 154.0,
+    "win_rate": 88.3,
+    "total_trades": 94,
+    "wins": 83,
+    "losses": 11,
     "skips": 10,
-    "avg_hold_min": 110.4,
-    "current_bp": 1852.06,
+    "avg_hold_min": 109.5,
+    "current_bp": 1794.02,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1852.06,
+    "real_balance": 1805.32,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -1760,6 +1805,11 @@
     {
       "date": "2026-08-27",
       "balance": 1852.06,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-08-28",
+      "balance": 1805.32,
       "net_deposits": 0.0
     }
   ]
