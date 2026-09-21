@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-18 13:30",
+  "generated": "2026-09-21 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -1860,6 +1860,21 @@
       "date": "2026-09-18",
       "time": "09:51:47",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 0.0,
+      "long_strike": 0.0,
+      "delta": 0.0,
+      "credit": 0.04,
+      "contracts": 0,
+      "pnl": 0.0,
+      "buying_power": 1920.57,
+      "hold_min": 0.0,
+      "direction": "call",
+      "vix": 14.87,
+      "date": "2026-09-21",
+      "time": "15:00:03",
+      "result": "SKIP"
     }
   ],
   "summary": {
@@ -1868,7 +1883,7 @@
     "total_trades": 109,
     "wins": 95,
     "losses": 13,
-    "skips": 15,
+    "skips": 16,
     "avg_hold_min": 117.1,
     "current_bp": 1920.57,
     "starting_balance": 1525.08,
@@ -2184,6 +2199,11 @@
     },
     {
       "date": "2026-09-18",
+      "balance": 1920.57,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-09-21",
       "balance": 1920.57,
       "net_deposits": 0.0
     }
