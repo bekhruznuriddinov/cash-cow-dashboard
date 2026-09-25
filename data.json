@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-24 13:30",
+  "generated": "2026-09-25 13:30",
   "trades": [
     {
       "short_strike": 723.0,
@@ -1950,20 +1950,50 @@
       "date": "2026-09-24",
       "time": "12:19:21",
       "result": "PROFIT"
+    },
+    {
+      "short_strike": 763.0,
+      "long_strike": 762.0,
+      "delta": 0.103,
+      "credit": 0.05,
+      "contracts": 4,
+      "pnl": 20.0,
+      "buying_power": 1763.87,
+      "hold_min": 162.4,
+      "direction": "put",
+      "vix": 15.2,
+      "date": "2026-09-25",
+      "time": "09:30:15",
+      "result": "PROFIT"
+    },
+    {
+      "short_strike": 767.0,
+      "long_strike": 766.0,
+      "delta": 0.117,
+      "credit": 0.06,
+      "contracts": 4,
+      "pnl": 8.0,
+      "buying_power": 0.0,
+      "hold_min": 23.2,
+      "direction": "put",
+      "vix": 15.2,
+      "date": "2026-09-25",
+      "time": "12:20:37",
+      "result": "PROFIT"
     }
   ],
   "summary": {
-    "total_pnl": -14.0,
-    "win_rate": 86.0,
-    "total_trades": 114,
-    "wins": 98,
+    "total_pnl": 14.0,
+    "win_rate": 86.2,
+    "total_trades": 116,
+    "wins": 100,
     "losses": 15,
     "skips": 16,
-    "avg_hold_min": 117.5,
-    "current_bp": 1748.55,
+    "avg_hold_min": 117.1,
+    "current_bp": 0.0,
     "starting_balance": 1525.08,
     "start_date": "2026-06-23",
-    "real_balance": 1748.55,
+    "real_balance": 1783.17,
     "net_deposits": 0.0
   },
   "balance_history": [
@@ -2295,6 +2325,11 @@
     {
       "date": "2026-09-24",
       "balance": 1748.55,
+      "net_deposits": 0.0
+    },
+    {
+      "date": "2026-09-25",
+      "balance": 1783.17,
       "net_deposits": 0.0
     }
   ]
